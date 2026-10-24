@@ -33,8 +33,8 @@ python3 -m venv .venv
 
 ```powershell
 py -3.12 -m venv .venv
-.venv\Scripts\python -m pip install --isolated -e ".[dev]"
-.venv\Scripts\python -m llmperf estimate --model llama-3.1-8b --gpu a100-80gb --batch 8 --seq-len 2048 --precision int4
+.\.venv\Scripts\python -m pip install --isolated -e ".[dev]"
+.\.venv\Scripts\python -m llmperf estimate --model llama-3.1-8b --gpu a100-80gb --batch 8 --seq-len 2048 --precision int4
 ```
 
 (`--isolated` makes pip ignore any extra package indexes set in your pip config.)
@@ -249,7 +249,7 @@ It reads the real bytes per weight from the file, so any GGUF quantization works
    ```
 4. Compare, giving your GPU's dense (not sparse) peaks:
    ```powershell
-   .venv\Scripts\python scripts\llama_bench_compare.py my_llama_bench.json --model llama-2-7b --gpu custom `
+   .\.venv\Scripts\python scripts\llama_bench_compare.py my_llama_bench.json --model llama-2-7b --gpu custom `
        --memory-gb 8 --bandwidth-gb-s 272 --fp16-tflops 22 --int8-tops 88
    ```
    (The four numbers are only an example; replace them with your GPU's values.)
