@@ -239,18 +239,33 @@ It reads the real bytes per weight from the file, so any GGUF quantization works
 1. Download a prebuilt llama.cpp release for your GPU from <https://github.com/ggml-org/llama.cpp/releases>
    (on Windows with an NVIDIA GPU, the `win-cuda` zip, plus the matching `cudart` zip if listed).
 2. Download the same model file as the public scoreboard:
-   `llama-2-7b.Q4_0.gguf` from <https://huggingface.co/TheBloke/Llama-2-7B-GGUF>.
+   `llama-2-7b.Q4_0.gguf` (3.83 GB) from <https://huggingface.co/TheBloke/Llama-2-7B-GGUF>.
+   **On a 4 GB GPU use `llama-2-7b.Q2_K.gguf` (2.83 GB) from the same repo instead**: Q4_0 plus the KV cache and
+   CUDA buffers will not fit, and if some layers fall back to the CPU the result no longer measures the GPU.
    Any GGUF of LLaMA 3.1 8B or Qwen2.5 7B also works; pass the matching `--model`.
 3. Run the benchmark and save JSON (PowerShell):
    ```powershell
    .\llama-bench.exe -m llama-2-7b.Q4_0.gguf -ngl 99 -o json > my_llama_bench.json
    ```
-4. Compare, giving your GPU's datasheet numbers (dense, not sparse):
+4. Compare, giving your GPU's dense (not sparse) peaks:
    ```powershell
    .venv\Scripts\python scripts\llama_bench_compare.py my_llama_bench.json --model llama-2-7b --gpu custom `
        --memory-gb 8 --bandwidth-gb-s 272 --fp16-tflops 22 --int8-tops 88
    ```
-   (The four numbers are only an example; replace them with your GPU's values from its official specifications.)
+   (The four numbers are only an example; replace them with your GPU's values.)
+
+**If your GPU's datasheet doesn't list bandwidth or tensor TFLOPS** (common for laptop GPUs), derive them from
+`nvidia-smi --query-gpu=name,memory.total,clocks.max.sm,clocks.max.memory --format=csv` and the architecture:
+
+- Bandwidth (GB/s) = bus width in bits / 8 x memory data rate in Gbps. Check: RTX 4090, 384 / 8 x 21 = 1008 GB/s,
+  as in the Ada whitepaper. On GeForce cards with GDDR6/GDDR6X, `nvidia-smi` usually reports a memory clock equal
+  to half the data rate, so data rate (Gbps) = 2 x clocks.max.memory (MHz) / 1000. This is a convention, not a
+  datasheet value, so cross-check it with your laptop maker's spec sheet or GPU-Z if you can.
+- Ada (RTX 40 series) tensor peaks per SM per clock, worked out from the whitepaper's RTX 4090 numbers
+  (165.2 TFLOPS / (128 SMs x 2.52 GHz) = 512): **512 FP16 FLOPs (FP32 accumulate) and 2048 INT8 ops**.
+  Peak = SMs x that number x max SM clock. An Ada SM has 128 CUDA cores, so SMs = CUDA cores / 128.
+- Laptop GPUs rarely hold their max clock under load (the clock depends on the power limit and cooling), so these
+  peaks are upper bounds. Note this when you read the error.
 
 ## Data sources
 

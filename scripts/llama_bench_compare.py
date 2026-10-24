@@ -22,8 +22,10 @@ from llmperf.specs import load_gpus, load_models
 
 
 def load_runs(path: str) -> list[dict]:
-    with open(path, encoding="utf-8-sig") as f:  # PowerShell '>' can write a BOM
-        text = f.read().strip()
+    raw = open(path, "rb").read()
+    # Windows PowerShell 5.1's '>' writes UTF-16; PowerShell 7 writes UTF-8 (sometimes with a BOM).
+    encoding = "utf-16" if raw[:2] in (b"\xff\xfe", b"\xfe\xff") else "utf-8-sig"
+    text = raw.decode(encoding).strip()
     if text.startswith("["):
         return json.loads(text)
     return [json.loads(line) for line in text.splitlines() if line.strip()]  # jsonl
