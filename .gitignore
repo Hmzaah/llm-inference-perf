@@ -1,0 +1,9 @@
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+*.gguf
+validation/my_llama_bench*.json

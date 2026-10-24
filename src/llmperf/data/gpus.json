@@ -1,0 +1,49 @@
+{
+  "a100-80gb": {
+    "name": "NVIDIA A100 80GB SXM",
+    "memory_gb": 80,
+    "bandwidth_gb_s": 2039,
+    "fp16_tflops": 312,
+    "fp16_tflops_sparse": 624,
+    "int8_tops": 624,
+    "int8_tops_sparse": 1248,
+    "fp8_tflops": null,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/a100-80gb-datasheet-update-a4-nvidia-1485612-r12-web.pdf",
+    "notes": "Datasheet SXM column: FP16/BF16 Tensor Core 312 TF (624 with sparsity*), INT8 624 TOPS (1,248 with sparsity*), 80GB, 2,039 GB/s. Ampere has no FP8 tensor cores."
+  },
+  "h100-sxm": {
+    "name": "NVIDIA H100 SXM",
+    "memory_gb": 80,
+    "bandwidth_gb_s": 3350,
+    "fp16_tflops": 989.5,
+    "fp16_tflops_sparse": 1979,
+    "int8_tops": 1979,
+    "int8_tops_sparse": 3958,
+    "fp8_tflops": 1979,
+    "fp8_tflops_sparse": 3958,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/",
+    "notes": "NVIDIA lists only sparse numbers: FP16/BF16 1,979 TFLOPS*, FP8 3,958*, INT8 3,958 TOPS*, 80GB, 3.35TB/s (*with sparsity). Dense = half, per the NVIDIA H100 datasheet footnote 'Specifications 1/2 lower without sparsity' (NVIDIA doc 2569583, copy hosted at https://bxin.cisco.com/c/dam/en/us/products/collateral/servers-unified-computing/ucs-c-series-rack-servers/nvidia-h100-80-gpu.pdf)."
+  },
+  "rtx-4090": {
+    "name": "NVIDIA GeForce RTX 4090",
+    "memory_gb": 24,
+    "bandwidth_gb_s": 1008,
+    "fp16_tflops": 165.2,
+    "fp16_tflops_sparse": 330.4,
+    "int8_tops": 660.6,
+    "int8_tops_sparse": 1321.2,
+    "fp8_tflops": null,
+    "source": "https://images.nvidia.com/aem-dam/Solutions/Data-Center/l4/nvidia-ada-gpu-architecture-whitepaper-v2.1.pdf",
+    "notes": "Ada whitepaper Appendix A, Table 2 (dense / sparse): FP16 Tensor with FP32 accumulate 165.2 / 330.4, FP16 Tensor with FP16 accumulate 330.3 / 660.6, INT8 Tensor 660.6 / 1321.2 TOPS, 24 GB GDDR6X, 1008 GB/s. This project uses the FP32-accumulate number because PyTorch/cuBLAS GEMMs accumulate in FP32. FP8 was not checked, so it is left empty."
+  },
+  "gaudi2": {
+    "name": "Intel Gaudi 2",
+    "memory_gb": 96,
+    "bandwidth_gb_s": 2450,
+    "fp16_tflops": 432,
+    "int8_tops": null,
+    "fp8_tflops": 865,
+    "source": "https://habana.ai/wp-content/uploads/pdf/2022/gaudi2-whitepaper.pdf",
+    "notes": "Memory 96 GB HBM2E at 2.45 TB/s: Gaudi 2 whitepaper. Matrix engine (MME) peaks BF16 432 TFLOPS and FP8 865 TFLOPS: Table 1 of the Intel Gaudi 3 white paper (https://cdrdv2-public.intel.com/817486/gaudi-3-ai-accelerator-white-paper.pdf), which lists Gaudi 2 bandwidth as 2.46 TB/s. Intel does not say whether these are dense or sparse; treated as dense (assumption). The BF16 number is stored in the fp16 slot (same 16-bit math). No INT8 MME number is published, so 8-bit runs use FP8."
+  }
+}
