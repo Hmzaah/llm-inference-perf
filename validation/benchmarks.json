@@ -1,0 +1,39 @@
+{
+  "_about": "Published measurements used to check the estimates. Every value was read from the source URL next to it. Nothing here is estimated or invented.",
+  "llama_cpp": {
+    "source": "https://github.com/ggml-org/llama.cpp/discussions/15013",
+    "source_title": "Performance of llama.cpp on Nvidia CUDA (discussion opened Aug 1, 2025)",
+    "model": "llama-2-7b",
+    "model_file": "llama-2-7b.Q4_0.gguf (https://huggingface.co/TheBloke/Llama-2-7B-GGUF)",
+    "precision": "q4_0",
+    "kv_precision": "fp16",
+    "batch": 1,
+    "command": "llama-bench -m llama-2-7b.Q4_0.gguf -ngl 99 -fa 0,1",
+    "tests": "pp512 = process a 512-token prompt (prefill); tg128 = generate 128 tokens one at a time from an empty context (decode). Both in tokens/s.",
+    "rows": [
+      {"gpu": "rtx-4090", "chip_as_listed": "RTX 4090, 24 GB / GDDR6X / 384 bit", "commit": "2241453",
+       "fa_on": {"pp512": 14770.63, "tg128": 188.96}, "fa_off": {"pp512": 11992.70, "tg128": 186.21}},
+      {"gpu": "a100-80gb", "chip_as_listed": "A100 80 GB, 80 GB / HBM2e / 5120 bit (form factor not stated)", "commit": "5143fa8",
+       "fa_on": {"pp512": 5285.96, "tg128": 200.90}, "fa_off": {"pp512": 4849.53, "tg128": 190.88}},
+      {"gpu": "h100-sxm", "chip_as_listed": "H100 80 GB, 80 GB / HBM3 / 5120 bit (HBM3 = SXM version)", "commit": "5143fa8",
+       "fa_on": {"pp512": 11263.29, "tg128": 280.74}, "fa_off": {"pp512": 9918.34, "tg128": 267.81}}
+    ]
+  },
+  "gaudi": {
+    "source": "https://intel.cn/content/www/cn/zh/developer/platform/gaudi/model-performance-gaudi2-inference.html",
+    "source_title": "Intel: Model Performance Data for Intel Gaudi 2 AI Accelerators, inference, Max Throughput table (page metadata last-modified 2025-05-05)",
+    "software": "Intel Gaudi software v1.20.0, PyTorch 2.6.0, Optimum-Habana, Hugging Face model",
+    "model": "llama-3.1-8b",
+    "gpu": "gaudi2",
+    "precision": "fp8",
+    "kv_precision": "fp8",
+    "kv_precision_note": "The page does not state the KV cache type. FP8 is assumed because at batch 512 x 2176 tokens a 16-bit KV cache would need 146 GB, more than the card's 96 GB, so these runs cannot be using a 16-bit cache.",
+    "throughput_note": "Throughput is reported as tokens per second; the page does not define it further. It is compared here with generated tokens / (prefill + all decode steps).",
+    "rows": [
+      {"batch": 2816, "input_len": 128, "output_len": 128, "throughput_tps": 19907},
+      {"batch": 512, "input_len": 128, "output_len": 2048, "throughput_tps": 14866},
+      {"batch": 179, "input_len": 2048, "output_len": 128, "throughput_tps": 2099},
+      {"batch": 256, "input_len": 2048, "output_len": 2048, "throughput_tps": 6060}
+    ]
+  }
+}
